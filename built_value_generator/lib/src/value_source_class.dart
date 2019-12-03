@@ -1012,13 +1012,16 @@ abstract class ValueSourceClass
     result.writeln('}');
     result.writeln();
 
+    result.writeln('int _hashCodeCached = null;');
+    result.writeln();
     result.writeln('@override');
     result.writeln('int get hashCode {');
+    result.writeln('  if (_hashCodeCached == null) {');
 
     if (comparedFields.isEmpty) {
-      result.writeln('return ${name.hashCode};');
+      result.writeln('_hashCodeCached = ${name.hashCode};');
     } else {
-      result.writeln(r'return $jf(');
+      result.writeln(r'_hashCodeCached = $jf(');
       result.writeln(r'$jc(' * comparedFields.length);
       // Use a different seed for builders than for values, so they do not have
       // identical hashCodes if the values are identical.
@@ -1027,6 +1030,8 @@ abstract class ValueSourceClass
           comparedFields.map((field) => '${field.name}.hashCode').join('), '));
       result.writeln('));');
     }
+    result.writeln('  }');
+    result.writeln('  return _hashCodeCached;');
     result.writeln('}');
     result.writeln();
 
